@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test API - AnviShop</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #333;
+      font-size: 18px;
+      margin: 30px 0 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #eee;
+    }
+    .test-section {
+      margin-bottom: 30px;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .result {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .status.ok { background: #28a745; color: white; }
+    .status.fail { background: #dc3545; color: white; }
+    code {
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Test API AnviShop</h1>
+    <p style="color: #666; margin-bottom: 20px;">Test các chức năng đăng nhập</p>
+
+    <!-- TEST 1: API Connection -->
+    <div class="test-section">
+      <h2>1️⃣ Test Kết nối API</h2>
+      <button onclick="testConnection()">🔌 Test Connection</button>
+      <div id="result1" class="result" style="display:none;"></div>
+    </div>
+
+    <!-- TEST 2: Email Login -->
+    <div class="test-section">
+      <h2>2️⃣ Test Email Login (Đơn giản)</h2>
+      <input type="email" id="emailSimple" placeholder="Nhập email của bạn" value="">
+      <button onclick="testEmailLogin()">📧 Test Email Login</button>
+      <div id="result2" class="result" style="display:none;"></div>
+    </div>
+
+    <!-- TEST 3: Password Login -->
+    <div class="test-section">
+      <h2>3️⃣ Test Password Login</h2>
+      <input type="email" id="emailPassword" placeholder="Email" value="">
+      <input type="password" id="password" placeholder="Password" value="test123">
+      <button onclick="testPasswordLogin()">🔐 Test Password Login</button>
+      <div id="result3" class="result" style="display:none;"></div>
+    </div>
+
+    <!-- TEST 4: Google Token -->
+    <div class="test-section">
+      <h2>4️⃣ Test Google Login</h2>
+      <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+        Nhập Google ID Token (để trống để test với token giả)
+      </p>
+      <input type="text" id="googleToken" placeholder="Google ID Token (optional)">
+      <button onclick="testGoogleLogin()">🔍 Test Google Login</button>
+      <div id="result4" class="result" style="display:none;"></div>
+    </div>
+
+    <!-- API URL Display -->
+    <div style="margin-top: 30px; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+      <strong>API URL:</strong><br>
+      <code id="apiUrlDisplay" style="word-break: break-all;"></code>
+    </div>
+  </div>
+
+  <script>
+    // ============ CẤU HÌNH ============
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz583swcb9_ogM3pHGpLKiM7_-1BXIwxwLDsejQ8CSqxEDR0Um113hlXdBxCQmTkjC0/exec';
+    
+    document.getElementById('apiUrlDisplay').textContent = API_URL;
+
+    // ============ HELPER FUNCTIONS ============
+    function showResult(id, content, type = 'info') {
+      const el = document.getElementById(id);
+      el.textContent = content;
+      el.className = 'result ' + type;
+      el.style.display = 'block';
+    }
+
+    function apiCall(action, data = {}) {
+      return fetch(API_URL + '?action=' + action, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .catch(err => {
+        throw new Error('Network error: ' + err.message);
+      });
+    }
+
+    // ============ TEST 1: CONNECTION ============
+    async function testConnection() {
+      showResult('result1', '⏳ Đang test kết nối...', 'info');
+      
+      try {
+        const result = await apiCall('salesLogin', {});
+        
+        if (result.success === false && result.error) {
+          showResult('result1', 
+            '✅ KẾT NỐI THÀNH CÔNG!\n\n' +
+            'API Response:\n' +
+            JSON.stringify(result, null, 2) +
+            '\n\n✓ Backend đang hoạt động bình thường',
+            'success'
+          );
+        } else {
+          showResult('result1', 
+            '⚠️ Kết nối OK nhưng response không đúng:\n\n' +
+            JSON.stringify(result, null, 2),
+            'error'
+          );
+        }
+      } catch (err) {
+        showResult('result1', 
+          '❌ LỖI KẾT NỐI!\n\n' +
+          'Error: ' + err.message + '\n\n' +
+          '🔍 Nguyên nhân có thể:\n' +
+          '1. Apps Script chưa deploy\n' +
+          '2. API_URL sai\n' +
+          '3. Permission chưa set "Anyone"',
+          'error'
+        );
+      }
+    }
+
+    // ============ TEST 2: EMAIL LOGIN ============
+    async function testEmailLogin() {
+      const email = document.getElementById('emailSimple').value.trim();
+      
+      if (!email) {
+        showResult('result2', '❌ Vui lòng nhập email!', 'error');
+        return;
+      }
+
+      showResult('result2', '⏳ Đang đăng nhập...', 'info');
+      
+      try {
+        const result = await apiCall('salesLogin', { email });
+        
+        if (result.success) {
+          showResult('result2', 
+            '✅ ĐĂNG NHẬP THÀNH CÔNG!\n\n' +
+            'User Info:\n' +
+            JSON.stringify(result, null, 2) +
+            '\n\n✓ Email tồn tại trong hệ thống\n' +
+            '✓ IsActive = true',
+            'success'
+          );
+        } else {
+          showResult('result2', 
+            '❌ ĐĂNG NHẬP THẤT BẠI\n\n' +
+            'Error: ' + result.error + '\n\n' +
+            '🔍 Nguyên nhân:\n' +
+            '1. Email không có trong Sheet "Sales"\n' +
+            '2. IsActive = false\n' +
+            '3. Sheet "Sales" chưa đúng cấu trúc',
+            'error'
+          );
+        }
+      } catch (err) {
+        showResult('result2', '❌ LỖI: ' + err.message, 'error');
+      }
+    }
+
+    // ============ TEST 3: PASSWORD LOGIN ============
+    async function testPasswordLogin() {
+      const email = document.getElementById('emailPassword').value.trim();
+      const password = document.getElementById('password').value;
+      
+      if (!email || !password) {
+        showResult('result3', '❌ Vui lòng nhập email và password!', 'error');
+        return;
+      }
+
+      showResult('result3', '⏳ Đang đăng nhập...', 'info');
+      
+      try {
+        const result = await apiCall('passwordLogin', { email, password });
+        
+        if (result.success) {
+          showResult('result3', 
+            '✅ ĐĂNG NHẬP THÀNH CÔNG!\n\n' +
+            'User Info:\n' +
+            JSON.stringify(result, null, 2) +
+            '\n\n✓ Email & password đúng\n' +
+            '✓ Password đã được hash và lưu',
+            'success'
+          );
+        } else {
+          showResult('result3', 
+            '❌ ĐĂNG NHẬP THẤT BẠI\n\n' +
+            'Error: ' + result.error + '\n\n' +
+            '🔍 Nguyên nhân:\n' +
+            '1. Email không tồn tại\n' +
+            '2. Password sai\n' +
+            '3. Chưa set password (cột E trống)\n' +
+            '4. Code backend chưa có function passwordLogin',
+            'error'
+          );
+        }
+      } catch (err) {
+        showResult('result3', '❌ LỖI: ' + err.message, 'error');
+      }
+    }
+
+    // ============ TEST 4: GOOGLE LOGIN ============
+    async function testGoogleLogin() {
+      const token = document.getElementById('googleToken').value.trim() || 'fake_token_for_test';
+
+      showResult('result4', '⏳ Đang xác thực Google token...', 'info');
+      
+      try {
+        const result = await apiCall('googleLogin', { credential: token });
+        
+        if (result.success) {
+          showResult('result4', 
+            '✅ GOOGLE LOGIN THÀNH CÔNG!\n\n' +
+            'User Info:\n' +
+            JSON.stringify(result, null, 2),
+            'success'
+          );
+        } else {
+          showResult('result4', 
+            '❌ GOOGLE LOGIN THẤT BẠI\n\n' +
+            'Error: ' + result.error + '\n\n' +
+            '🔍 Nguyên nhân:\n' +
+            '1. Token không hợp lệ (nếu dùng token thật)\n' +
+            '2. Email không có trong Sheet "Sales"\n' +
+            '3. Code backend chưa có function googleLogin\n' +
+            '4. Google Client ID chưa đúng',
+            'error'
+          );
+        }
+      } catch (err) {
+        showResult('result4', '❌ LỖI: ' + err.message, 'error');
+      }
+    }
+
+    // Auto test connection on load
+    window.onload = function() {
+      console.log('🚀 AnviShop API Tester loaded');
+      console.log('API URL:', API_URL);
+    };
+  </script>
+</body>
+</html>
