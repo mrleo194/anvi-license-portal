@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug API - AnviShop</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .test-box {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+    .test-box h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .result {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 400px;
+      overflow-y: auto;
+      display: none;
+    }
+    .result.show { display: block; }
+    .result.success { border-color: #28a745; background: #d4edda; }
+    .result.error { border-color: #dc3545; background: #f8d7da; }
+    .result.info { border-color: #17a2b8; background: #d1ecf1; }
+    .api-info {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .api-info code {
+      background: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      word-break: break-all;
+    }
+    .instructions {
+      background: #e7f3ff;
+      border-left: 4px solid #2196F3;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .instructions ol {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+    .instructions li {
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔍 Debug API AnviShop</h1>
+    <p class="subtitle">Kiểm tra kết nối và chức năng API</p>
+
+    <div class="api-info">
+      <strong>📡 API URL:</strong><br>
+      <code id="apiUrl"></code>
+    </div>
+
+    <div class="instructions">
+      <strong>📋 HƯỚNG DẪN:</strong>
+      <ol>
+        <li>Chạy các test theo thứ tự từ trên xuống</li>
+        <li>Nếu test nào FAILED, chụp màn hình kết quả</li>
+        <li>Gửi screenshot cho tôi để debug</li>
+      </ol>
+    </div>
+
+    <!-- TEST 1 -->
+    <div class="test-box">
+      <h3>✅ TEST 1: Kiểm tra kết nối API</h3>
+      <button onclick="test1()">▶ Chạy Test 1</button>
+      <div id="result1" class="result"></div>
+    </div>
+
+    <!-- TEST 2 -->
+    <div class="test-box">
+      <h3>✅ TEST 2: Kiểm tra function googleLogin</h3>
+      <button onclick="test2()">▶ Chạy Test 2</button>
+      <div id="result2" class="result"></div>
+    </div>
+
+    <!-- TEST 3 -->
+    <div class="test-box">
+      <h3>✅ TEST 3: Kiểm tra function salesLogin</h3>
+      <input type="email" id="emailTest3" placeholder="Nhập email của bạn (trong Sheet Sales)" value="">
+      <button onclick="test3()">▶ Chạy Test 3</button>
+      <div id="result3" class="result"></div>
+    </div>
+
+    <!-- TEST 4 -->
+    <div class="test-box">
+      <h3>✅ TEST 4: Kiểm tra Sheet Sales</h3>
+      <p style="font-size: 13px; color: #666; margin-bottom: 10px;">
+        Test này sẽ thử lấy thông tin từ email của bạn
+      </p>
+      <input type="email" id="emailTest4" placeholder="Nhập email của bạn" value="">
+      <button onclick="test4()">▶ Chạy Test 4</button>
+      <div id="result4" class="result"></div>
+    </div>
+
+    <!-- TEST 5 -->
+    <div class="test-box">
+      <h3>✅ TEST 5: Kiểm tra CORS</h3>
+      <button onclick="test5()">▶ Chạy Test 5</button>
+      <div id="result5" class="result"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbz583swcb9_ogM3pHGpLKiM7_-1BXIwxwLDsejQ8CSqxEDR0Um113hlXdBxCQmTkjC0/exec';
+    
+    document.getElementById('apiUrl').textContent = API_URL;
+
+    function showResult(id, text, type = 'info') {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'result show ' + type;
+    }
+
+    function apiCall(action, data = {}) {
+      const url = API_URL + '?action=' + action;
+      
+      return fetch(url, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+        mode: 'cors'
+      })
+      .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        return response.json();
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+        throw error;
+      });
+    }
+
+    // TEST 1: Kết nối cơ bản
+    async function test1() {
+      showResult('result1', '⏳ Đang test kết nối...', 'info');
+      
+      try {
+        const response = await fetch(API_URL + '?action=salesLogin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        
+        const data = await response.json();
+        
+        showResult('result1', 
+          '✅ TEST 1: PASSED\n\n' +
+          'Kết nối API thành công!\n\n' +
+          'Response:\n' + JSON.stringify(data, null, 2),
+          'success'
+        );
+      } catch (error) {
+        showResult('result1',
+          '❌ TEST 1: FAILED\n\n' +
+          'Lỗi kết nối:\n' + error.message + '\n\n' +
+          'Nguyên nhân có thể:\n' +
+          '1. Apps Script chưa deploy\n' +
+          '2. API_URL sai\n' +
+          '3. Permission chưa set "Anyone"',
+          'error'
+        );
+      }
+    }
+
+    // TEST 2: Function googleLogin
+    async function test2() {
+      showResult('result2', '⏳ Đang test function googleLogin...', 'info');
+      
+      try {
+        const data = await apiCall('googleLogin', { credential: 'fake_token' });
+        
+        if (data.error && data.error.includes('Token')) {
+          showResult('result2',
+            '✅ TEST 2: PASSED\n\n' +
+            'Function googleLogin TỒN TẠI!\n\n' +
+            'Response:\n' + JSON.stringify(data, null, 2),
+            'success'
+          );
+        } else {
+          showResult('result2',
+            '⚠️ TEST 2: UNEXPECTED\n\n' +
+            'Function có vẻ tồn tại nhưng response lạ:\n' +
+            JSON.stringify(data, null, 2),
+            'info'
+          );
+        }
+      } catch (error) {
+        showResult('result2',
+          '❌ TEST 2: FAILED\n\n' +
+          'Function googleLogin CHƯA CÓ hoặc có lỗi!\n\n' +
+          'Error: ' + error.message + '\n\n' +
+          'Giải pháp:\n' +
+          '1. Kiểm tra Code.gs đã paste đúng chưa\n' +
+          '2. Deploy lại với New version',
+          'error'
+        );
+      }
+    }
+
+    // TEST 3: Function salesLogin với email
+    async function test3() {
+      const email = document.getElementById('emailTest3').value.trim();
+      
+      if (!email) {
+        showResult('result3', '❌ Vui lòng nhập email!', 'error');
+        return;
+      }
+      
+      showResult('result3', '⏳ Đang test salesLogin với email: ' + email, 'info');
+      
+      try {
+        const data = await apiCall('salesLogin', { email: email });
+        
+        if (data.success) {
+          showResult('result3',
+            '✅ TEST 3: PASSED\n\n' +
+            'Email TỒN TẠI trong Sheet Sales!\n\n' +
+            'User Info:\n' + JSON.stringify(data, null, 2) + '\n\n' +
+            '→ Bạn có thể đăng nhập được!',
+            'success'
+          );
+        } else {
+          showResult('result3',
+            '❌ TEST 3: FAILED\n\n' +
+            'Email KHÔNG TỒN TẠI hoặc bị vô hiệu hóa!\n\n' +
+            'Error: ' + data.error + '\n\n' +
+            'Giải pháp:\n' +
+            '1. Kiểm tra Sheet "Sales" có email này chưa\n' +
+            '2. Kiểm tra IsActive = TRUE\n' +
+            '3. Kiểm tra chính tả email',
+            'error'
+          );
+        }
+      } catch (error) {
+        showResult('result3',
+          '❌ TEST 3: ERROR\n\n' +
+          'Lỗi gọi API:\n' + error.message,
+          'error'
+        );
+      }
+    }
+
+    // TEST 4: Kiểm tra chi tiết Sheet
+    async function test4() {
+      const email = document.getElementById('emailTest4').value.trim();
+      
+      if (!email) {
+        showResult('result4', '❌ Vui lòng nhập email!', 'error');
+        return;
+      }
+      
+      showResult('result4', '⏳ Đang kiểm tra Sheet Sales...', 'info');
+      
+      try {
+        // Try to get sales history (only works if email exists)
+        const data = await apiCall('salesHistory', { email: email });
+        
+        if (data.success !== undefined) {
+          showResult('result4',
+            '✅ TEST 4: PASSED\n\n' +
+            'Sheet Sales hoạt động bình thường!\n\n' +
+            'Response:\n' + JSON.stringify(data, null, 2),
+            'success'
+          );
+        } else {
+          showResult('result4',
+            '⚠️ TEST 4: UNCLEAR\n\n' +
+            'Response:\n' + JSON.stringify(data, null, 2),
+            'info'
+          );
+        }
+      } catch (error) {
+        showResult('result4',
+          '❌ TEST 4: ERROR\n\n' +
+          'Error: ' + error.message,
+          'error'
+        );
+      }
+    }
+
+    // TEST 5: CORS
+    async function test5() {
+      showResult('result5', '⏳ Đang test CORS...', 'info');
+      
+      try {
+        const response = await fetch(API_URL + '?action=salesLogin', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Origin': window.location.origin
+          },
+          body: JSON.stringify({}),
+          mode: 'cors',
+          credentials: 'omit'
+        });
+        
+        const corsHeaders = {
+          'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+          'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+          'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+        };
+        
+        showResult('result5',
+          '✅ TEST 5: PASSED\n\n' +
+          'CORS Headers:\n' + JSON.stringify(corsHeaders, null, 2) + '\n\n' +
+          'Response status: ' + response.status,
+          'success'
+        );
+      } catch (error) {
+        showResult('result5',
+          '❌ TEST 5: FAILED\n\n' +
+          'CORS Error:\n' + error.message + '\n\n' +
+          'Giải pháp:\n' +
+          '1. Deploy Apps Script với "Who has access: Anyone"\n' +
+          '2. Đảm bảo Apps Script có handleRequest() đúng',
+          'error'
+        );
+      }
+    }
+
+    // Auto-run Test 1 on load
+    window.onload = function() {
+      console.log('Debug page loaded');
+      console.log('API URL:', API_URL);
+    };
+  </script>
+</body>
+</html>
